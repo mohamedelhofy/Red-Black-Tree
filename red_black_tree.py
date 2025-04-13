@@ -179,51 +179,54 @@ class RedBlackTree :
             self.__print_helper(node.right, indent, True)
 
     def print_tree(self):
-        self.__print_helper(self.root, "", True)        
+        self.__print_helper(self.root, "", True) 
 
-def load_dictionary(tree, filename="EN-US-Dictionary.txt"):
-    try:
-        with open(filename, 'r') as f:
-            for line in f:
-                word = line.strip()
-                if word:
-                    tree.insert(word)
-    except FileNotFoundError:
-        open(filename, 'w').close() 
+    def mix(self, node):
+        while node.right != self.NIL :
+            node = node.right
 
-def update_dictionary_file(word, filename="EN-US-Dictionary.txt"):
-    with open(filename, 'a') as f:
-        f.write(word + '\n')
+        return node
 
+    def min(self, node):
+        while node.left != self.NIL :
+            node = node.left
 
-def dictionary_app():
-    rbt = RedBlackTree()
-    load_dictionary(rbt)
-
-    while True:
-        print("\nDictionary Menu:")
-        print("1. Insert Word")
-        print("2. Look-up Word")
-        print("3. Exit")
-        choice = input("Enter choice: ")
-
-        if choice == '1':
-            word = input("Enter word to insert: ").strip()
-            rbt.insert(word)
-            update_dictionary_file(word)
-            print("Word inserted.")
-            print(f"Tree size: {rbt.get_size()}")
-            print(f"Tree height: {rbt.get_height()}")
-            print(f"Black height: {rbt.get_black_height()}")
-        elif choice == '2':
-            word = input("Enter word to look up: ").strip()
-            print("YES" if rbt.search(word) else "NO")
-        elif choice == '3':
-            print("Exiting Dictionary App.")
-            break
-        else:
-            print("Invalid choice. Try again.")
+        return node
     
+    def predecessor(self,node):
+        if node.left!=self.NIL:
+            return self.mix(node.left)
+        parent = node.parent
+
+        while parent != self.NIL and parent.left == node :
+            parent= parent.parent
+            node= node.parent
+
+        return parent
+    
+    def successor(self,node):
+        if node.right!=self.NIL:
+            return self.min(node.right)
+        parent = node.parent
+
+        while parent != self.NIL and parent.right == node :
+            parent= parent.parent
+            node= node.parent
+
+        return parent
+         
+
 if __name__ == "__main__":
-    pass
-       
+    rbt= RedBlackTree()
+    for i in [20, 10, 30, 5, 15, 25, 35] :
+        rbt.insert(i)
+
+    target = rbt.search( 20)
+    pred = rbt.predecessor(target)
+    succ = rbt.successor(target)
+
+    print("Node:", target.val)
+    print("Predecessor:", pred.val if pred else "None")
+    print("Successor:", succ.val if succ else "None")
+ 
+
